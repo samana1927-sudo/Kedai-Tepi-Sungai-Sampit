@@ -1,0 +1,243 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Delius', cursive;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at 50% 35%, #aae1f8 0%, #68badc 35%, #348baa 70%, #195b77 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
+    background-size: 15px 15px;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 1;
+}
+
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(40,127,158,0.4) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.bg-decorations {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.bg-decorations::before {
+    content: "🍃";
+    position: absolute;
+    top: 12%;
+    left: 10%;
+    font-size: 4.5rem;
+    opacity: 0.25;
+    filter: blur(2px) rotate(-15deg);
+}
+
+.bg-decorations::after {
+    content: "🌿";
+    position: absolute;
+    bottom: 12%;
+    right: 10%;
+    font-size: 5.5rem;
+    opacity: 0.22;
+    filter: blur(1.5px) rotate(20deg);
+}
+
+.login-card {
+    background: rgba(229, 244, 246, 0.96); 
+    backdrop-filter: blur(8px); 
+    width: 90%;
+    max-width: 520px;
+    padding: 55px 45px 45px 45px;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 30px 70px rgba(11, 48, 65, 0.5);
+    border-radius: 42px 37px 47px 42px / 37px 47px 37px 47px;
+    border: 3px solid #5294a7;
+    text-align: center;
+    overflow: hidden;
+}
+
+.brush-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 120px;
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.wave-bottom {
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+    width: 102%;
+    height: 95px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.logo-area {
+    width: 150px;
+    height: 150px;
+   
+    
+    margin: 0 auto 18px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+  
+
+}
+
+.logo-area img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.brand-title {
+    font-family: 'Caveat', cursive;
+    font-size: 36px;
+    color: #1e586d;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.brand-subtitle {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    color: #1e586d;
+    letter-spacing: 4px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 35px;
+}
+
+.form-container {
+    position: relative;
+    z-index: 2;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-family: 'Caveat', cursive;
+    color: #1e586d;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    margin-left: 2px;
+}
+
+.input-style {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-style i {
+    position: absolute;
+    left: 18px;
+    color: #5892a4;
+    font-size: 18px;
+}
+
+.input-style i.eye-icon {
+    left: auto;
+    right: 18px;
+    cursor: pointer;
+}
+
+.input-style input {
+    width: 100%;
+    padding: 15px 16px 15px 48px;
+    background-color: #eef7f8;
+    border: 2px solid #a6ccd7;
+    border-radius: 14px 12px 15px 13px / 12px 14px 12px 15px;
+    font-family: 'Delius', cursive;
+    font-size: 15px;
+    color: #2b5564;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-style input:focus {
+    border-color: #1e586d;
+    background-color: #fff;
+    box-shadow: 0 0 12px rgba(30, 88, 109, 0.2);
+}
+
+.input-style input::placeholder {
+    color: #abc9d3;
+}
+
+.btn-masuk {
+    width: 100%;
+    padding: 12px;
+    background-color: #287f9e;
+    color: #ffffff;
+    border: 2px solid #1e5f77;
+    border-radius: 14px 15px 13px 16px / 14px 13px 15px 13px;
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 20px rgba(40, 127, 158, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-masuk:hover {
+    background-color: #1e637c;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(40, 127, 158, 0.45);
+}
+
+.footer-link {
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    color: #1e586d;
+    font-weight: 600;
+}
+
+.footer-link a {
+    color: #0c7cb4;
+    text-decoration: none;
+    margin-left: 4px;
+}
+
+.footer-link a:hover {
+    text-decoration: underline;
+}
