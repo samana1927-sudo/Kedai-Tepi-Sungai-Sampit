@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kedai Tepi Sungai Sampit - POS KASIR</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Delius&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <div class="bg-decorations"></div>
+
+    <div class="login-card">
+        
+        <svg class="brush-top" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M0,0 Q30,5 40,25 T15,70 Q5,85 0,90 Z" fill="none" stroke="#287f9e" stroke-width="2" stroke-dasharray="2,3" opacity="0.4"/>
+            <path d="M0,0 Q20,15 25,45 T5,80" fill="none" stroke="#287f9e" stroke-width="1.5" opacity="0.3"/>
+        </svg>
+
+        <div class="logo-area">
+            <img src="logo.png" alt="Logo">
+        </div>
+
+        <div class="brand-title">Kedai Tepi Sungai Sampit</div>
+        <div class="brand-subtitle">POS KASIR</div>
+
+        <div id="error-message" class="error-msg"></div>
+
+        <form class="form-container">
+            <div class="form-group">
+                <label for="username">Nama User</label>
+                <div class="input-style">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="username" placeholder="User (kasirtes)" required autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-style">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="password (kasirtes)" required>
+                    <i class="fa-regular fa-eye eye-icon" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-masuk">Masuk</button>
+        </form>
+
+      
+
+<div class="login-footer-text" style="text-align: center; margin-top: 18px; font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div style="display: inline-block; background: #e6f4ea; color: #137333; padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid #ceead6; letter-spacing: 0.3px; text-transform: uppercase; box-shadow: 0 4px 10px rgba(19, 115, 51, 0.08);">
+        <i class="fa-solid fa-circle-percentage" style="animation: pulse 1.5s infinite; margin-right: 4px;"></i> 
+        Welcome! Live Automated Discount Engine Active
+    </div>
+    <p style="font-size: 11px; color: #558396; font-weight: 700; margin-top: 6px; letter-spacing: 0.2px;">
+        Auto-calculates
+    </p>
+</div>
+
+<!-- Tambahkan sedikit style animasi ini di bagian <style> halaman login kamu agar logo persennya berkedip estetik -->
+<style>
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+</style>
+
+        <svg class="wave-bottom" viewBox="0 0 100 20" preserveAspectRatio="none">
+            <path d="M0,15 Q25,5 50,13 T100,8 L100,20 L0,20 Z" fill="#4faec2" opacity="0.4"/>
+            <path d="M0,12 Q30,18 60,10 T100,14 L100,20 L0,20 Z" fill="#29839f" opacity="0.8"/>
+            <circle cx="89" cy="5" r="1.2" fill="#fff" opacity="0.7" />
+            <circle cx="96" cy="6" r="0.9" fill="#fff" opacity="0.8" />
+        </svg>
+
+    </div>
+
+<script>
+    const form = document.querySelector('.form-container');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const togglePassword = document.getElementById('togglePassword');
+    const errorMessage = document.getElementById('error-message');
+
+    // 1. Logika Intuitif Tombol Lihat/Sembunyikan Password
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Ubah ikon mata sesuai dengan status password terlihat/tersembunyi
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+
+    // 2. Logika Validasi Login khusus 'kasirtes'
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+        
+        const namaUser = usernameInput.value.trim();
+        const passwordUser = passwordInput.value;
+        
+        // Sembunyikan error lama setiap kali mencoba submit ulang
+        errorMessage.style.display = 'none';
+        errorMessage.textContent = '';
+
+        // Pengecekan kredensial kasirtes
+        if (namaUser === "kasirtes" && passwordUser === "kasirtes") {
+            // Simpan nama kasir aktif ke LocalStorage untuk digunakan di dashboard nanti
+            localStorage.setItem('namaKasirAktif', namaUser);
+            window.location.href = "menudasbord.html";
+        } else {
+            // Efek interaktif: Tampilkan pesan gagal yang estetik tanpa pop-up mengganggu
+            errorMessage.textContent = "Username atau Password salah!";
+            errorMessage.style.display = 'block';
+            
+            // Berikan efek getar sedikit pada card untuk indikasi error
+            const card = document.querySelector('.login-card');
+            card.style.animation = 'shake 0.3s ease-in-out';
+            setTimeout(() => card.style.animation = '', 300);
+        }
+    });
+</script>
+</body>
+</html>

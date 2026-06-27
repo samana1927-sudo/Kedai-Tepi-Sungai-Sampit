@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem POS Kasir Pro - Kedai Tepi Sungai Sampit</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="menudasbord.css">
+    
+    <style>
+        /* TAMBAHAN STYLE UNTUK FITUR BARU AGAR MENYATU DENGAN PREMIUM POS ENGINE v3.1 */
+        .admin-config-panel {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(37, 129, 164, 0.2);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            padding: 14px;
+            transition: all 0.3s ease;
+        }
+        .admin-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            color: #1e6682;
+            font-size: 13px;
+        }
+        .admin-panel-body {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(37, 129, 164, 0.2);
+        }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .admin-input-group label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: #558396;
+            margin-bottom: 4px;
+        }
+        .admin-input-group input, .admin-input-group select {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+        }
+        .btn-admin-save {
+            background: #2581a4;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .promo-list-mini {
+            max-height: 90px;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 6px;
+            margin-top: 8px;
+        }
+        .promo-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            padding: 4px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .btn-del-promo {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+        .btn-del-promo:hover { color: #c5221f; }
+        
+        /* Progress Bar Highlighter Diskon Otomatis */
+        .discount-progress-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+        }
+        .progress-text-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: #558396;
+            margin-bottom: 5px;
+        }
+        .progress-bar-bg {
+            background: #f1f5f9;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #3b94b7, #2581a4);
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        .progress-bar-fill.achieved {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="curved-header">
+        <div class="brand-area">
+            <div class="logo-wrapper">
+                <img src="logo.png" alt="Logo" class="brand-logo">
+            </div>
+            <div class="brand-text">
+    <h1 class="font-khas">Kedai Tepi Sungai Sampit</h1>
+    <p class="pos-version-tag">
+        <i class="fa-solid fa-server"></i> POS SYSTEM ENGINE  
+        <span style="margin: 0 6px; color: #559cb8;">•</span> 
+        <span style="color: #137333; background: #e6f4ea; padding: 2px 8px; border-radius: 6px; font-size: 9px; font-weight: 800; display: inline-flex; align-items: center; gap: 3px; border: 1px solid #ceead6; vertical-align: middle;">
+            <i class="fa-solid fa-circle-percentage" style="font-size: 10px;"></i> AUTOMATED DISCOUNT 
+        </span>
+    </p>
+</div>
+        </div>
+        
+        <div class="user-info">
+            <div class="status-badge">
+                <span class="indicator-online"></span> 
+                <span id="display-nama-kasir">Kasir: Pengguna</span>
+            </div>
+            <a href="index.html" class="btn-logout"><i class="fa-solid fa-power-off"></i> Keluar</a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <section class="products-section glass-panel-katalog">
+            
+            <div class="admin-config-panel">
+                <div class="admin-panel-header" onclick="toggleAdminPanel()">
+                    <span><i class="fa-solid fa-sliders"></i> Pengaturan Aturan Diskon & Kode Promo (Panel Admin)</span>
+                    <i class="fa-solid fa-chevron-down" id="admin-chevron"></i>
+                </div>
+                <div class="admin-panel-body" id="admin-panel-content">
+                    <div class="admin-grid">
+                        <div class="admin-input-group">
+                            <label>Status Auto Diskon</label>
+                            <select id="cfg-auto-status" onchange="simpanKonfigurasiAdmin()">
+                                <option value="ON">AKTIF (ON)</option>
+                                <option value="OFF">MATI (OFF)</option>
+                            </select>
+                        </div>
+                        <div class="admin-input-group">
+                            <label>Min. Belanja Auto Diskon</label>
+                            <input type="number" id="cfg-auto-min" value="100000" placeholder="Contoh: 100000">
+                        </div>
+                        <div class="admin-input-group">
+                            <label>Persen Potongan (%)</label>
+                            <input type="number" id="cfg-auto-pct" value="10" placeholder="Contoh: 10">
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                        <span class="input-label-sm" style="margin-bottom: 2px;"><i class="fa-solid fa-plus"></i> BUAT VOUCHER / KODE PROMO BARU</span>
+                        <div class="admin-grid" style="grid-template-columns: 2fr 1fr 1fr; align-items: end;">
+                            <div class="admin-input-group">
+                                <label>Nama Kode (Kapital)</label>
+                                <input type="text" id="new-promo-code" placeholder="TEPISUNGAI25" style="text-transform: uppercase;">
+                            </div>
+                            <div class="admin-input-group">
+                                <label>Potongan (%)</label>
+                                <input type="number" id="new-promo-pct" placeholder="15">
+                            </div>
+                            <button class="btn-admin-save" onclick="tambahKodePromoBaru()" style="height: 29px;">Tambah</button>
+                        </div>
+                        <div class="promo-list-mini" id="daftar-promo-admin">
+                            </div>
+                    </div>
+                    
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button class="btn-admin-save" onclick="simpanKonfigurasiAdmin()"><i class="fa-solid fa-floppy-disk"></i> Terapkan Aturan Baru</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <div class="header-title-group">
+                    <h2 class="section-title"><i class="fa-solid fa-boxes-stacked"></i> Katalog Produk</h2>
+                    <p class="section-subtitle">Pilih item menu di bawah untuk dimasukkan ke bill</p>
+                </div>
+                <span class="promo-badge" id="live-promo-badge-text"><i class="fa-solid fa-tags"></i> Auto Diskon 10% Min. Belanja Rp100.000</span>
+            </div>
+            
+            <div class="scrollable-menu-area">
+                <div class="category-container">
+                    <div class="category-divider">Mie & Ricebowl</div>
+                    <div class="products-grid">
+                        <div class="product-card" onclick="tambahKeKeranjang('Mie Candu Ori', 12000)">
+                            <div class="product-icon">🍜</div>
+                            <div class="product-details">
+                                <span class="product-name">Mie Candu Ori</span>
+                                <span class="product-price-tag">Rp 12.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Mie Ayam', 13000)">
+                            <div class="product-icon">🍲</div>
+                            <div class="product-details">
+                                <span class="product-name">Mie Ayam</span>
+                                <span class="product-price-tag">Rp 13.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Mie Daging', 18000)">
+                            <div class="product-icon">🥩</div>
+                            <div class="product-details">
+                                <span class="product-name">Mie Daging</span>
+                                <span class="product-price-tag">Rp 18.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Indomie All Variant', 6000)">
+                            <div class="product-icon">🥢</div>
+                            <div class="product-details">
+                                <span class="product-name">Indomie Variant</span>
+                                <span class="product-price-tag">Rp 6.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Ricebowl Ayam', 15000)">
+                            <div class="product-icon">🍚</div>
+                            <div class="product-details">
+                                <span class="product-name">Ricebowl Ayam</span>
+                                <span class="product-price-tag">Rp 15.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Ricebowl Daging', 20000)">
+                            <div class="product-icon">丼</div>
+                            <div class="product-details">
+                                <span class="product-name">Ricebowl Daging</span>
+                                <span class="product-price-tag">Rp 20.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Nasi Jeruk Ayam', 15000)">
+                            <div class="product-icon">🍃</div>
+                            <div class="product-details">
+                                <span class="product-name">Nasi d. Jeruk Ayam</span>
+                                <span class="product-price-tag">Rp 15.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Nasi Jeruk Daging', 22000)">
+                            <div class="product-icon">🌱</div>
+                            <div class="product-details">
+                                <span class="product-name">Nasi d. Jeruk Dg.</span>
+                                <span class="product-price-tag">Rp 22.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-container">
+                    <div class="category-divider">Lalapan & Olahan Sambal</div>
+                    <div class="products-grid">
+                        <div class="product-card" onclick="tambahKeKeranjang('Lalapan Ayam', 20000)">
+                            <div class="product-icon">🍗</div>
+                            <div class="product-details">
+                                <span class="product-name">Lalapan Ayam</span>
+                                <span class="product-price-tag">Rp 20.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Lalapan Bebek', 30000)">
+                            <div class="product-icon">🦆</div>
+                            <div class="product-details">
+                                <span class="product-name">Lalapan Bebek</span>
+                                <span class="product-price-tag">Rp 30.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Lalapan Nila', 20000)">
+                            <div class="product-icon">🐟</div>
+                            <div class="product-details">
+                                <span class="product-name">Lalapan Nila</span>
+                                <span class="product-price-tag">Rp 20.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Lalapan Patin', 25000)">
+                            <div class="product-icon">🦈</div>
+                            <div class="product-details">
+                                <span class="product-name">Lalapan Patin</span>
+                                <span class="product-price-tag">Rp 25.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Katsu Sambal Matah', 20000)">
+                            <div class="product-icon">🌶️</div>
+                            <div class="product-details">
+                                <span class="product-name">Katsu Matah</span>
+                                <span class="product-price-tag">Rp 20.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Katsu Saos Mayo', 18000)">
+                            <div class="product-icon">🍳</div>
+                            <div class="product-details">
+                                <span class="product-name">Katsu Mayo</span>
+                                <span class="product-price-tag">Rp 18.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Cobek Cumi Asin', 23000)">
+                            <div class="product-icon">🦑</div>
+                            <div class="product-details">
+                                <span class="product-name">Cobek Cumi Asin</span>
+                                <span class="product-price-tag">Rp 23.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-container">
+                    <div class="category-divider">Cemilan & Manisan</div>
+                    <div class="products-grid">
+                        <div class="product-card" onclick="tambahKeKeranjang('Kentang Goreng', 15000)">
+                            <div class="product-icon">🍟</div>
+                            <div class="product-details">
+                                <span class="product-name">Kentang Goreng</span>
+                                <span class="product-price-tag">Rp 15.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Mix Platter', 28000)">
+                            <div class="product-icon">🍿</div>
+                            <div class="product-details">
+                                <span class="product-name">Mix Platter</span>
+                                <span class="product-price-tag">Rp 28.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Roti Chocho Crunchy', 15000)">
+                            <div class="product-icon">🍞</div>
+                            <div class="product-details">
+                                <span class="product-name">Chocho Crunchy</span>
+                                <span class="product-price-tag">Rp 15.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Ice Cream', 20000)">
+                            <div class="product-icon">🍦</div>
+                            <div class="product-details">
+                                <span class="product-name">Ice Cream</span>
+                                <span class="product-price-tag">Rp 20.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category-container">
+                    <div class="category-divider">Minuman Segar</div>
+                    <div class="products-grid">
+                        <div class="product-card" onclick="tambahKeKeranjang('Teh Es', 4000)">
+                            <div class="product-icon">🥤</div>
+                            <div class="product-details">
+                                <span class="product-name">Teh Es</span>
+                                <span class="product-price-tag">Rp 4.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Teh Hangat', 3000)">
+                            <div class="product-icon">🍵</div>
+                            <div class="product-details">
+                                <span class="product-name">Teh Hangat</span>
+                                <span class="product-price-tag">Rp 3.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Jeruk Peras', 7000)">
+                            <div class="product-icon">🍹</div>
+                            <div class="product-details">
+                                <span class="product-name">Jeruk Peras</span>
+                                <span class="product-price-tag">Rp 7.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Air Mineral', 4000)">
+                            <div class="product-icon">🥤</div>
+                            <div class="product-details">
+                                <span class="product-name">Air Mineral</span>
+                                <span class="product-price-tag">Rp 4.000</span>
+                            </div>
+                        </div>
+                        <div class="product-card" onclick="tambahKeKeranjang('Kopi Susu', 8000)">
+                            <div class="product-icon">☕</div>
+                            <div class="product-details">
+                                <span class="product-name">Kopi Susu</span>
+                                <span class="product-price-tag">Rp 8.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cart-section real-receipt">
+            <div class="receipt-casual-bar">
+                <span class="casual-tag">RECEIPT STATION</span>
+                <span class="item-counter-badge" id="total-qty-counter">0 Items</span>
+            </div>
+            
+            <div class="cart-table-container">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Menu</th>
+                            <th style="text-align: center; width: 50px;">Qty</th>
+                            <th style="text-align: right; width: 90px;">Total</th>
+                            <th style="text-align: center; width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="isi-keranjang">
+                        <tr id="empty-cart-row">
+                            <td colspan="4" class="empty-state-text">
+                                <i class="fa-solid fa-basket-shopping"></i><br>Belum ada menu dipilih
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="discount-progress-container" id="progress-container-auto">
+                <div class="progress-text-info">
+                    <span id="progress-msg">Progress Diskon Otomatis</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-bar-fill-id"></div>
+                </div>
+            </div>
+
+            <div class="checkout-area">
+                <div class="summary-row">
+                    <span class="lbl">Subtotal</span>
+                    <span id="subtotal" class="val bold-val">Rp 0</span>
+                </div>
+                
+                <div class="summary-row automated-discount" id="row-diskon-auto" style="display: none;">
+                    <span class="discount-label" id="lbl-diskon-auto-text"><i class="fa-solid fa-circle-percentage"></i> Diskon Otomatis (10%)</span>
+                    <span id="diskon-auto-val" class="discount-value">-Rp 0</span>
+                </div>
+
+                <div class="promo-input-group">
+                    <label class="input-label-sm">KODE PROMO / VOUCHER KASIR</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-ticket-simple"></i>
+                        <input type="text" id="kode-promo" placeholder="Ketik kode promo di sini..." oninput="hitungTotalAkhir()">
+                    </div>
+                    <div id="promo-status"></div>
+                </div>
+
+                <div class="summary-row total-row-box">
+                    <span class="total-lbl">TOTAL AKHIR</span>
+                    <span id="total-harga" class="total-val">Rp 0</span>
+                </div>
+
+                <div class="payment-input">
+                    <label class="input-label-sm"><i class="fa-solid fa-cash-register"></i> NOMINAL TUNAI DITERIMA</label>
+                    <input type="number" id="uang-bayar" placeholder="0" oninput="hitungKembalian()">
+                </div>
+
+                <div class="summary-row change-box">
+                    <span class="change-lbl">Kembalian</span>
+                    <span id="kembalian" class="change-val">Rp 0</span>
+                </div>
+            </div>
+
+            <button class="btn-cetak" onclick="prosesTransaksi()">
+                <i class="fa-solid fa-bolt"></i> SELESAI & CETAK STRUK
+            </button>
+        </section>
+
+    </div>
+    
+    <div id="receipt-modal-overlay" class="modal-overlay">
+        <div class="receipt-paper animate-slide-up">
+            <div class="receipt-paper-header">
+                <div class="receipt-logo">☕</div>
+                <h3 class="receipt-shop-name">Kedai Tepi Sungai Sampit</h3>
+                <p class="receipt-shop-addr">Kotim, Kalimantan Tengah</p>
+                <div class="receipt-line-divider"></div>
+                <div class="receipt-meta-info">
+                    <span id="receipt-date-time">24/06/2026 -- 21:24</span>
+                    <span id="receipt-cashier-name">Kasir: Pengguna</span>
+                </div>
+                <div class="receipt-line-divider"></div>
+            </div>
+
+            <div class="receipt-paper-body">
+                <table class="receipt-items-table">
+                    <tbody id="receipt-items-list"></tbody>
+                </table>
+                <div class="receipt-line-divider"></div>
+            </div>
+
+            <div class="receipt-paper-footer">
+                <div class="receipt-bill-row">
+                    <span>Total Belanja</span>
+                    <span id="rcp-subtotal">Rp 0</span>
+                </div>
+                <div class="receipt-bill-row text-danger" id="rcp-row-diskon" style="display: none;">
+                    <span id="rcp-diskon-lbl">Diskon Otomatis (10%)</span>
+                    <span id="rcp-diskon">-Rp 0</span>
+                </div>
+                <div class="receipt-bill-row text-danger" id="rcp-row-voucher" style="display: none;">
+                    <span id="rcp-voucher-lbl">Voucher Promo</span>
+                    <span id="rcp-voucher-val">-Rp 0</span>
+                </div>
+                <div class="receipt-line-divider"></div>
+                <div class="receipt-bill-row rcp-bold-total">
+                    <span>TOTAL BILL</span>
+                    <span id="rcp-total">Rp 0</span>
+                </div>
+                <div class="receipt-bill-row">
+                    <span>Tunai Masuk</span>
+                    <span id="rcp-cash">Rp 0</span>
+                </div>
+                <div class="receipt-bill-row">
+                    <span>Kembalian</span>
+                    <span id="rcp-change">Rp 0</span>
+                </div>
+                <div class="receipt-line-divider"></div>
+                <p class="receipt-thank-msg">~ Terima Kasih Atas Kunjungan Anda ~<br>Kami Tunggu Kedatangan Anda Kembali😀</p>
+            </div>
+            
+            <div class="receipt-zigzag-bottom"></div>
+        </div>
+
+        <div class="receipt-action-panel">
+            <button class="btn-action-rcp btn-rcp-print" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Cetak Struk
+            </button>
+            <button class="btn-action-rcp btn-rcp-close" onclick="tutupModalResi()">
+                <i class="fa-solid fa-circle-xmark"></i> Tutup Kasir
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let keranjang = [];
+        let subtotal = 0;
+        let diskonOtomatis = 0;
+        let totalAkhir = 0;
+
+        // DATABASE KODE PROMO DINAMIS (KASIR UTAMA CRUD)
+        let databasePromo = {
+            "MAKANDISUNGAI": 5,
+            "P1": 10,
+            "P2": 25,
+            "P3": 15,
+            "P4": 5
+        };
+
+        // KONFIGURASI RULE AUTOMATED DISCOUNT DEFAULT
+        let configAutoDiscount = {
+            status: "ON",
+            minBelanja: 100000,
+            persen: 10
+        };
+
+        window.onload = function() {
+            //Ambil nama kasir aktif dari login page
+            const namaTersimpan = localStorage.getItem('namaKasirAktif');
+            if (namaTersimpan) {
+                document.getElementById('display-nama-kasir').innerText = "Kasir: " + namaTersimpan;
+            } else {
+                document.getElementById('display-nama-kasir').innerText = "Kasir: Guest Terminal";
+            }
+
+            // Muat data kustom dari LocalStorage agar awet saat direfresh
+            if(localStorage.getItem('posDatabasePromo')) {
+                databasePromo = JSON.parse(localStorage.getItem('posDatabasePromo'));
+            }
+            if(localStorage.getItem('posConfigAutoDiscount')) {
+                configAutoDiscount = JSON.parse(localStorage.getItem('posConfigAutoDiscount'));
+            }
+
+            // Pasang nilai lama ke panel admin UI
+            document.getElementById('cfg-auto-status').value = configAutoDiscount.status;
+            document.getElementById('cfg-auto-min').value = configAutoDiscount.minBelanja;
+            document.getElementById('cfg-auto-pct').value = configAutoDiscount.persen;
+
+            refreshUIAturanBadge();
+            renderDaftarPromoAdmin();
+            updateTampilanKasir();
+        };
+
+        // FUNCTIONS PANEL ADMIN CONTROL
+        function toggleAdminPanel() {
+            const content = document.getElementById('admin-panel-content');
+            const chevron = document.getElementById('admin-chevron');
+            if (content.style.display === "block") {
+                content.style.display = "none";
+                chevron.className = "fa-solid fa-chevron-down";
+            } else {
+                content.style.display = "block";
+                chevron.className = "fa-solid fa-chevron-up";
+            }
+        }
+
+        function refreshUIAturanBadge() {
+            const badge = document.getElementById('live-promo-badge-text');
+            if (configAutoDiscount.status === "ON") {
+                badge.innerHTML = `<i class="fa-solid fa-tags"></i> Auto Diskon ${configAutoDiscount.persen}% Min. Belanja Rp${parseInt(configAutoDiscount.minBelanja).toLocaleString('id-ID')}`;
+                badge.style.display = "inline-block";
+                document.getElementById('progress-container-auto').style.display = "block";
+            } else {
+                badge.style.display = "none";
+                document.getElementById('progress-container-auto').style.display = "none";
+            }
+        }
+
+        function simpanKonfigurasiAdmin() {
+            configAutoDiscount.status = document.getElementById('cfg-auto-status').value;
+            configAutoDiscount.minBelanja = parseFloat(document.getElementById('cfg-auto-min').value) || 0;
+            configAutoDiscount.persen = parseFloat(document.getElementById('cfg-auto-pct').value) || 0;
+
+            localStorage.setItem('posConfigAutoDiscount', JSON.stringify(configAutoDiscount));
+            refreshUIAturanBadge();
+            updateTampilanKasir();
+            alert('Aturan Sistem Automated Discount Berhasil Diperbarui!');
+        }
+
+        function renderDaftarPromoAdmin() {
+            const container = document.getElementById('daftar-promo-admin');
+            container.innerHTML = '';
+            for (let code in databasePromo) {
+                container.innerHTML += `
+                    <div class="promo-item-row">
+                        <span><b style="color:#2581a4;">${code}</b> (Potongan ${databasePromo[code]}%)</span>
+                        <button class="btn-del-promo" onclick="hapusKodePromo('${code}')"><i class="fa-solid fa-circle-xmark"></i></button>
+                    </div>
+                `;
+            }
+            localStorage.setItem('posDatabasePromo', JSON.stringify(databasePromo));
+        }
+
+        function tambahKodePromoBaru() {
+            const codeInput = document.getElementById('new-promo-code');
+            const pctInput = document.getElementById('new-promo-pct');
+            const code = codeInput.value.toUpperCase().trim();
+            const pct = parseFloat(pctInput.value) || 0;
+
+            if(code === "" || pct <= 0) {
+                alert('Masukkan nama kode dan persentase potongan yang valid!');
+                return;
+            }
+
+            databasePromo[code] = pct;
+            codeInput.value = '';
+            pctInput.value = '';
+            renderDaftarPromoAdmin();
+            hitungTotalAkhir();
+            alert(`Kode Promo "${code}" Berhasil Didaftarkan ke Mesin POS!`);
+        }
+
+        function hapusKodePromo(code) {
+            delete databasePromo[code];
+            renderDaftarPromoAdmin();
+            hitungTotalAkhir();
+        }
+
+        // LOGIKA KASIR UTAMA
+        function tambahKeKeranjang(nama, harga) {
+            let itemSama = keranjang.find(item => item.nama === nama);
+            if (itemSama) {
+                itemSama.qty += 1;
+            } else {
+                keranjang.push({ nama: nama, harga: harga, qty: 1 });
+            }
+            updateTampilanKasir();
+        }
+
+        function hapusItem(index) {
+            keranjang.splice(index, 1);
+            updateTampilanKasir();
+        }
+
+        function updateTampilanKasir() {
+            const tbody = document.getElementById('isi-keranjang');
+            tbody.innerHTML = '';
+            subtotal = 0;
+            let totalQty = 0;
+
+            if (keranjang.length === 0) {
+                tbody.innerHTML = `
+                    <tr id="empty-cart-row">
+                        <td colspan="4" class="empty-state-text">
+                            <i class="fa-solid fa-basket-shopping"></i><br>Belum ada menu dipilih
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('total-qty-counter').innerText = '0 Items';
+            } else {
+                keranjang.forEach((item, index) => {
+                    let totalItem = item.harga * item.qty;
+                    subtotal += totalItem;
+                    totalQty += item.qty;
+
+                    tbody.innerHTML += `
+                        <tr class="cart-item-row">
+                            <td class="item-name">${item.nama}</td>
+                            <td class="item-qty">${item.qty}x</td>
+                            <td class="item-total">Rp ${totalItem.toLocaleString('id-ID')}</td>
+                            <td style="text-align: center;">
+                                <button class="btn-delete" onclick="hapusItem(${index})">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('total-qty-counter').innerText = totalQty + ' Items';
+            }
+
+            // PERHITUNGAN LIVE HIGHLIGHT PROGRESS BAR AUTOMATED DISCOUNT
+            if (configAutoDiscount.status === "ON") {
+                const fillBar = document.getElementById('progress-bar-fill-id');
+                const percentText = document.getElementById('progress-percent');
+                const msgText = document.getElementById('progress-msg');
+                
+                let rasio = (subtotal / configAutoDiscount.minBelanja) * 100;
+                if (rasio > 100) rasio = 100;
+                
+                fillBar.style.width = rasio + "%";
+                percentText.innerText = Math.floor(rasio) + "%";
+
+                if (subtotal >= configAutoDiscount.minBelanja && subtotal > 0) {
+                    diskonOtomatis = subtotal * (configAutoDiscount.persen / 100);
+                    document.getElementById('lbl-diskon-auto-text').innerHTML = `<i class="fa-solid fa-circle-percentage"></i> Diskon Otomatis (${configAutoDiscount.persen}%)`;
+                    document.getElementById('diskon-auto-val').innerText = '-Rp ' + diskonOtomatis.toLocaleString('id-ID');
+                    document.getElementById('row-diskon-auto').style.display = 'flex';
+                    
+                    fillBar.classList.add('achieved');
+                    msgText.innerHTML = "🎉 Target Belanja Tercapai! Diskon Otomatis Aktif";
+                    msgText.style.color = "#16a34a";
+                } else {
+                    diskonOtomatis = 0;
+                    document.getElementById('row-diskon-auto').style.display = 'none';
+                    fillBar.classList.remove('achieved');
+                    
+                    let sisa = configAutoDiscount.minBelanja - subtotal;
+                    msgText.innerHTML = `Belanja <b>Rp ${sisa.toLocaleString('id-ID')}</b> lagi untuk diskon ${configAutoDiscount.persen}%`;
+                    msgText.style.color = "#558396";
+                }
+            } else {
+                diskonOtomatis = 0;
+                document.getElementById('row-diskon-auto').style.display = 'none';
+            }
+
+            document.getElementById('subtotal').innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
+            hitungTotalAkhir(); 
+        }
+
+        function hitungTotalAkhir() {
+            const kode = document.getElementById('kode-promo').value.toUpperCase().trim();
+            const statusPromo = document.getElementById('promo-status');
+            let diskonVoucherPersen = 0;
+
+            // FIX SECURITY SINKRONISASI KETIKA INPUT PROMO KOSONG ATAU SEMENTARA DIHAPUS
+            if (kode === "") {
+                statusPromo.innerText = "";
+                statusPromo.className = "";
+                diskonVoucherPersen = 0;
+            } else if (subtotal > 0) {
+                // Mengecek ke database promo dinamis hasil input panel admin
+                if (databasePromo.hasOwnProperty(kode)) {
+                    diskonVoucherPersen = databasePromo[kode] / 100;
+                    statusPromo.innerText = `✓ Kode ${kode} Aktif: Potongan ${databasePromo[kode]}%`;
+                    statusPromo.className = "success";
+                } else {
+                    diskonVoucherPersen = 0;
+                    statusPromo.innerText = "✗ Kode promo tidak valid/terdaftar";
+                    statusPromo.className = "error";
+                }
+            } else {
+                diskonVoucherPersen = 0;
+                statusPromo.innerText = "";
+            }
+
+            let diskonVoucherNilai = subtotal * diskonVoucherPersen;
+            totalAkhir = subtotal - diskonOtomatis - diskonVoucherNilai;
+            if (totalAkhir < 0) totalAkhir = 0;
+
+            document.getElementById('total-harga').innerText = 'Rp ' + totalAkhir.toLocaleString('id-ID');
+            hitungKembalian();
+        }
+
+        function hitungKembalian() {
+            const uangBayar = parseFloat(document.getElementById('uang-bayar').value) || 0;
+            const kembalianSpan = document.getElementById('kembalian');
+            
+            if (uangBayar >= totalAkhir && totalAkhir > 0) {
+                let sisa = uangBayar - totalAkhir;
+                kembalianSpan.innerText = 'Rp ' + sisa.toLocaleString('id-ID');
+                kembalianSpan.style.color = '#2581a4';
+            } else {
+                kembalianSpan.innerText = 'Rp 0';
+                if(uangBayar < totalAkhir && uangBayar > 0) {
+                     kembalianSpan.innerText = 'Nominal Kurang';
+                     kembalianSpan.style.color = '#ef4444';
+                }
+            }
+        }
+
+        function prosesTransaksi() {
+            const uangBayar = parseFloat(document.getElementById('uang-bayar').value) || 0;
+
+            if (keranjang.length === 0) {
+                alert('Keranjang belanja kosong! Silakan pilih menu terlebih dahulu.');
+                return;
+            }
+            if (uangBayar < totalAkhir) {
+                alert('Gagal memproses transaksi. Uang tunai yang dibayarkan kurang!');
+                return;
+            }
+
+            // SET METADATA STRUK
+            const sekarang = new Date();
+            const formatWaktu = sekarang.toLocaleDateString('id-ID') + ' -- ' + sekarang.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('receipt-date-time').innerText = formatWaktu;
+            
+            const namaKasir = localStorage.getItem('namaKasirAktif') || "Guest Terminal";
+            document.getElementById('receipt-cashier-name').innerText = "Kasir: " + namaKasir;
+
+            // RENDER DAFTAR BARANG KE STRUK
+            const listResi = document.getElementById('receipt-items-list');
+            listResi.innerHTML = '';
+            
+            keranjang.forEach(item => {
+                let totalItem = item.harga * item.qty;
+                listResi.innerHTML += `
+                    <tr>
+                        <td>${item.nama}</td>
+                        <td class="rcp-item-qty">${item.qty}x</td>
+                        <td class="rcp-item-price">Rp ${totalItem.toLocaleString('id-ID')}</td>
+                    </tr>
+                `;
+            });
+
+            // HITUNG FINANSIAL STRUK DINAMIS SESUAI ATURAN ADMIN
+            document.getElementById('rcp-subtotal').innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
+            
+            if (diskonOtomatis > 0) {
+                document.getElementById('rcp-diskon-lbl').innerText = `Diskon Otomatis (${configAutoDiscount.persen}%)`;
+                document.getElementById('rcp-diskon').innerText = '-Rp ' + diskonOtomatis.toLocaleString('id-ID');
+                document.getElementById('rcp-row-diskon').style.display = 'flex';
+            } else {
+                document.getElementById('rcp-row-diskon').style.display = 'none';
+            }
+
+            const kode = document.getElementById('kode-promo').value.toUpperCase().trim();
+            if (kode !== "" && databasePromo.hasOwnProperty(kode)) {
+                let nilaiVoucher = subtotal * (databasePromo[kode] / 100);
+                document.getElementById('rcp-voucher-lbl').innerText = `Voucher Promo (${kode} ${databasePromo[kode]}%)`;
+                document.getElementById('rcp-voucher-val').innerText = '-Rp ' + nilaiVoucher.toLocaleString('id-ID');
+                document.getElementById('rcp-row-voucher').style.display = 'flex';
+            } else {
+                document.getElementById('rcp-row-voucher').style.display = 'none';
+            }
+
+            document.getElementById('rcp-total').innerText = 'Rp ' + totalAkhir.toLocaleString('id-ID');
+            document.getElementById('rcp-cash').innerText = 'Rp ' + uangBayar.toLocaleString('id-ID');
+            document.getElementById('rcp-change').innerText = 'Rp ' + (uangBayar - totalAkhir).toLocaleString('id-ID');
+
+            // MEMUNCULKAN MODAL STRUK CETAK
+            document.getElementById('receipt-modal-overlay').style.display = 'flex';
+        }
+
+        function tutupModalResi() {
+            document.getElementById('receipt-modal-overlay').style.display = 'none';
+            keranjang = [];
+            document.getElementById('uang-bayar').value = '';
+            document.getElementById('kode-promo').value = '';
+            updateTampilanKasir();
+        }
+    </script>
+</body>
+</html>
